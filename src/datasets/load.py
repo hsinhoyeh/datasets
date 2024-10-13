@@ -91,7 +91,9 @@ from .utils.typing import PathLike
 from .utils.version import Version
 
 
-logger = get_logger(__name__)
+logger = get_logger(__name__, log_level="INFO")
+formatter = logging.Formatter("[%(levelname)s|%(filename)s:%(lineno)s] %(asctime)s >> %(message)s")
+logger.setFormatter(formatter)
 
 ALL_ALLOWED_EXTENSIONS = list(_EXTENSION_TO_MODULE.keys()) + [".zip"]
 
