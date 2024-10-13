@@ -91,7 +91,7 @@ from .utils.typing import PathLike
 from .utils.version import Version
 
 
-logger = get_logger(__name__, log_level="INFO")
+logger = get_logger(__name__)
 formatter = logging.Formatter("[%(levelname)s|%(filename)s:%(lineno)s] %(asctime)s >> %(message)s")
 logger.setFormatter(formatter)
 
