@@ -2051,6 +2051,7 @@ def load_dataset(
     >>> ds = load_dataset('imagefolder', data_dir='/path/to/images', split='train')
     ```
     """
+    logger.info("load_dataset is called")
     if data_files is not None and not data_files:
         raise ValueError(f"Empty 'data_files': '{data_files}'. It should be either non-empty or None (default).")
     if Path(path, config.DATASET_STATE_JSON_FILENAME).exists():
@@ -2105,8 +2106,11 @@ def load_dataset(
     keep_in_memory = (
         keep_in_memory if keep_in_memory is not None else is_small_dataset(builder_instance.info.dataset_size)
     )
+    logger.info(f"load_dataset is called. {keep_in_memory}")
     ds = builder_instance.as_dataset(split=split, verification_mode=verification_mode, in_memory=keep_in_memory)
+    logger.info(f"load_dataset is called. as_dataset")
     if save_infos:
+        logger.info(f"load_dataset is called. save_infos")
         builder_instance._save_infos()
 
     return ds
@@ -2146,6 +2150,8 @@ def load_from_disk(
     >>> ds = load_from_disk('path/to/dataset/directory')
     ```
     """
+
+    logger.info(f"load_from_disk is called.")
     fs: fsspec.AbstractFileSystem
     fs, *_ = url_to_fs(dataset_path, **(storage_options or {}))
     if not fs.exists(dataset_path):
