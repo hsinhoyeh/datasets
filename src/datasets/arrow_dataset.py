@@ -2352,6 +2352,7 @@ class Dataset(DatasetInfoMixin, IndexableMixin, TensorflowDatasetMixin):
         })>
         ```
         """
+        logger.info(f"arrow_dataset.__len__ {time.time()}")
         return self.num_rows
 
     def __iter__(self):
@@ -2360,6 +2361,8 @@ class Dataset(DatasetInfoMixin, IndexableMixin, TensorflowDatasetMixin):
         If a formatting is set with [`Dataset.set_format`] rows will be returned with the
         selected format.
         """
+
+        logger.info(f"arrow_dataset.__iter__ {time.time()}")
         if self._indices is None:
             # Fast iteration
             # Benchmark: https://gist.github.com/mariosasko/0248288a2e3a7556873969717c1fe52b (fast_iter_batch)
@@ -2394,6 +2397,7 @@ class Dataset(DatasetInfoMixin, IndexableMixin, TensorflowDatasetMixin):
             drop_last_batch (:obj:`bool`, default `False`): Whether a last batch smaller than the batch_size should be
                 dropped
         """
+        logger.info(f"arrow_dataset.iter {time.time()}")
         if self._indices is None:
             # Fast iteration
             # Benchmark: https://gist.github.com/mariosasko/0248288a2e3a7556873969717c1fe52b (fast_iter_batch)
@@ -2677,6 +2681,7 @@ class Dataset(DatasetInfoMixin, IndexableMixin, TensorflowDatasetMixin):
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])}
         ```
         """
+        logger.info(f"arrow_dataset.with_format {time.time()}")
         dataset = copy.deepcopy(self)
         dataset.set_format(type=type, columns=columns, output_all_columns=output_all_columns, **format_kwargs)
         return dataset
@@ -2725,6 +2730,7 @@ class Dataset(DatasetInfoMixin, IndexableMixin, TensorflowDatasetMixin):
                  0, 0, 0, 0, 0])}
         ```
         """
+        logger.info(f"arrow_dataset.with_transform {time.time()}")
         dataset = copy.deepcopy(self)
         dataset.set_transform(transform=transform, columns=columns, output_all_columns=output_all_columns)
         return dataset
@@ -2733,6 +2739,8 @@ class Dataset(DatasetInfoMixin, IndexableMixin, TensorflowDatasetMixin):
         """
         Can be used to index columns (by string names) or rows (by integer, slice, or list-like of integer indices)
         """
+
+        logger.info(f"arrow_dataset.__getitems {time.time()}")
         if isinstance(key, bool):
             raise TypeError("dataset index must be int, str, slice or collection of int, not bool")
         format_type = kwargs["format_type"] if "format_type" in kwargs else self._format_type
