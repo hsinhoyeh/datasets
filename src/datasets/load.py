@@ -93,8 +93,6 @@ from .utils.version import Version
 import logging
 
 logger = get_logger(__name__)
-formatter = logging.Formatter("[%(levelname)s|%(filename)s:%(lineno)s] %(asctime)s >> %(message)s")
-logger.setFormatter(formatter)
 
 ALL_ALLOWED_EXTENSIONS = list(_EXTENSION_TO_MODULE.keys()) + [".zip"]
 
