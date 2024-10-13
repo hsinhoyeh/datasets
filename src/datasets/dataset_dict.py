@@ -44,11 +44,13 @@ class DatasetDict(dict):
     """A dictionary (dict of str: datasets.Dataset) with dataset transforms methods (map, filter, etc.)"""
 
     def _check_values_type(self):
+        logger.info("DatasetDict._check_values_type is called")
         for dataset in self.values():
             if not isinstance(dataset, Dataset):
                 raise TypeError(f"Values in `DatasetDict` should be of type `Dataset` but got type '{type(dataset)}'")
 
     def _check_values_features(self):
+        logger.info("DatasetDict._check_values_features is called")
         items = list(self.items())
         for item_a, item_b in zip(items[:-1], items[1:]):
             if item_a[1].features != item_b[1].features:
@@ -57,9 +59,11 @@ class DatasetDict(dict):
                 )
 
     def __enter__(self):
+        logger.info("DatasetDict.__enter__ is called")
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        logger.info("DatasetDict.__exit__ is called")
         # Here `del` is used to del the pyarrow tables. This properly closes the files used for memory mapped tables
         for dataset in self.values():
             if hasattr(dataset, "_data"):
@@ -68,6 +72,7 @@ class DatasetDict(dict):
                 del dataset._indices
 
     def __getitem__(self, k) -> Dataset:
+        logger.info("DatasetDict.__getitem__ is called")
         if isinstance(k, (str, NamedSplit)) or len(self) == 0:
             return super().__getitem__(k)
         else:
@@ -93,6 +98,7 @@ class DatasetDict(dict):
         >>> ds.data
         ```
         """
+        logger.info("DatasetDict.data is called")
         self._check_values_type()
         return {k: dataset.data for k, dataset in self.items()}
 
@@ -111,6 +117,8 @@ class DatasetDict(dict):
          'validation': [{'filename': '/root/.cache/huggingface/datasets/rotten_tomatoes_movie_review/default/1.0.0/40d411e45a6ce3484deed7cc15b82a53dad9a72aafd9f86f8f227134bec5ca46/rotten_tomatoes_movie_review-validation.arrow'}]}
         ```
         """
+
+        logger.info("DatasetDict.cache_files is called")
         self._check_values_type()
         return {k: dataset.cache_files for k, dataset in self.items()}
 
@@ -127,6 +135,7 @@ class DatasetDict(dict):
         {'test': 2, 'train': 2, 'validation': 2}
         ```
         """
+        logger.info("DatasetDict.new_columns is called")
         self._check_values_type()
         return {k: dataset.num_columns for k, dataset in self.items()}
 
@@ -143,6 +152,7 @@ class DatasetDict(dict):
         {'test': 1066, 'train': 8530, 'validation': 1066}
         ```
         """
+        logger.info("DatasetDict.num_rows is called")
         self._check_values_type()
         return {k: dataset.num_rows for k, dataset in self.items()}
 
@@ -161,6 +171,7 @@ class DatasetDict(dict):
          'validation': ['text', 'label']}
         ```
         """
+        logger.info("DatasetDict.column_names is called")
         self._check_values_type()
         return {k: dataset.column_names for k, dataset in self.items()}
 
@@ -177,6 +188,7 @@ class DatasetDict(dict):
         {'test': (1066, 2), 'train': (8530, 2), 'validation': (1066, 2)}
         ```
         """
+        logger.info("DatasetDict.shape is called")
         self._check_values_type()
         return {k: dataset.shape for k, dataset in self.items()}
 
@@ -209,6 +221,7 @@ class DatasetDict(dict):
         })
         ```
         """
+        logger.info("DatasetDict.flatten is called")
         self._check_values_type()
         return DatasetDict({k: dataset.flatten(max_depth=max_depth) for k, dataset in self.items()})
 
@@ -233,6 +246,7 @@ class DatasetDict(dict):
         {'test': [1, 0], 'train': [1, 0], 'validation': [1, 0]}
         ```
         """
+        logger.info("DatasetDict.unique is called")
         self._check_values_type()
         return {k: dataset.unique(column) for k, dataset in self.items()}
 
@@ -252,6 +266,7 @@ class DatasetDict(dict):
         {'test': 0, 'train': 0, 'validation': 0}
         ```
         """
+        logger.info("DatasetDict.cleanup_cache_files is called")
         self._check_values_type()
         return {k: dataset.cleanup_cache_files() for k, dataset in self.items()}
 
@@ -360,6 +375,7 @@ class DatasetDict(dict):
         })
         ```
         """
+        logger.info("DatasetDict.remove_column is called")
         self._check_values_type()
         return DatasetDict({k: dataset.remove_columns(column_names=column_names) for k, dataset in self.items()})
 
@@ -400,6 +416,7 @@ class DatasetDict(dict):
         })
         ```
         """
+        logger.info("DatasetDict.rename_column is called")
         self._check_values_type()
         return DatasetDict(
             {
@@ -443,6 +460,7 @@ class DatasetDict(dict):
         })
         ```
         """
+        logger.info("DatasetDict.rename_columns is called")
         self._check_values_type()
         return DatasetDict({k: dataset.rename_columns(column_mapping=column_mapping) for k, dataset in self.items()})
 
@@ -479,6 +497,7 @@ class DatasetDict(dict):
         })
         ```
         """
+        logger.info("DatasetDict.select_columns is called")
         self._check_values_type()
         return DatasetDict({k: dataset.select_columns(column_names=column_names) for k, dataset in self.items()})
 
@@ -879,10 +898,12 @@ class DatasetDict(dict):
         >>> ds = ds.map(add_prefix, num_proc=4)
         ```
         """
+
+        logger.info("DatasetDict.map is called")
         self._check_values_type()
         if cache_file_names is None:
             cache_file_names = {k: None for k in self}
-        return DatasetDict(
+        ret = DatasetDict(
             {
                 k: dataset.map(
                     function=function,
@@ -906,6 +927,9 @@ class DatasetDict(dict):
                 for k, dataset in self.items()
             }
         )
+        logger.info("DatasetDict.map is leaved")
+
+        return ret
 
     def filter(
         self,
@@ -1266,6 +1290,8 @@ class DatasetDict(dict):
         >>> dataset_dict.save_to_disk("path/to/dataset/directory", num_shards={"train": 1024, "test": 8})
         ```
         """
+
+        logger.info("save_to_disk is called")
         fs: fsspec.AbstractFileSystem
         fs, _ = url_to_fs(dataset_dict_path, **(storage_options or {}))
 
@@ -1288,6 +1314,8 @@ class DatasetDict(dict):
                 num_proc=num_proc,
                 storage_options=storage_options,
             )
+
+        logger.info("save_to_disk is leaved")
 
     @staticmethod
     def load_from_disk(
@@ -1321,6 +1349,9 @@ class DatasetDict(dict):
         >>> ds = load_from_disk('path/to/dataset/directory')
         ```
         """
+
+        logger.info("load_from_disk is called")
+
         fs: fsspec.AbstractFileSystem
         fs, dataset_dict_path = url_to_fs(dataset_dict_path, **(storage_options or {}))
 
@@ -1345,6 +1376,7 @@ class DatasetDict(dict):
             dataset_dict[k] = Dataset.load_from_disk(
                 dataset_dict_split_path, keep_in_memory=keep_in_memory, storage_options=storage_options
             )
+        logger.info("load_from_disk is leaved")
         return dataset_dict
 
     @staticmethod
@@ -1621,6 +1653,8 @@ class DatasetDict(dict):
         >>> french_dataset = load_dataset("<organization>/<dataset_id>", "fr")
         ```
         """
+
+        logger.info("pushtohub is called")
         if num_shards is None:
             num_shards = {k: None for k in self}
         elif not isinstance(num_shards, dict):
@@ -1806,6 +1840,7 @@ class DatasetDict(dict):
                     + (f" (still {num_commits - i - 1} to go)" if num_commits - i - 1 else "")
                     + "."
                 )
+        logger.info("pushtohub is leaved")
         return commit_info
 
 
@@ -1935,7 +1970,9 @@ class IterableDatasetDict(dict):
          'text': 'Review: the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .'}
         ```
         """
-        return IterableDatasetDict(
+
+        logger.info("IterableDatasetDict.map is called")
+        ret = IterableDatasetDict(
             {
                 k: dataset.map(
                     function=function,
@@ -1950,6 +1987,9 @@ class IterableDatasetDict(dict):
                 for k, dataset in self.items()
             }
         )
+        logger.info("IterableDatasetDict.map is leaved")
+
+        return ret
 
     def filter(
         self,
