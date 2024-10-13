@@ -90,6 +90,7 @@ from .utils.py_utils import get_imports, lock_importable_file
 from .utils.typing import PathLike
 from .utils.version import Version
 
+import logging
 
 logger = get_logger(__name__)
 formatter = logging.Formatter("[%(levelname)s|%(filename)s:%(lineno)s] %(asctime)s >> %(message)s")
