@@ -77,6 +77,10 @@ def _configure_library_root_logger() -> None:
     library_root_logger.addHandler(logging.StreamHandler())
     library_root_logger.setLevel(_get_default_logging_level())
 
+    for handler in library_root_logger.handlers:
+        formatter = logging.Formatter("[%(levelname)s|%(filename)s:%(lineno)s] %(asctime)s >> %(message)s")
+        handler.setFormatter(formatter)
+
 
 def _reset_library_root_logger() -> None:
     library_root_logger = _get_library_root_logger()
