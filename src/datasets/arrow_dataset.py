@@ -2763,9 +2763,14 @@ class Dataset(DatasetInfoMixin, IndexableMixin, TensorflowDatasetMixin):
 
     def __getitems__(self, keys: List) -> List:
         """Can be used to get a batch using a list of integers indices."""
+        logger.info(f"arrow_dataset.__getitems__ {time.time()}")
         batch = self.__getitem__(keys)
         n_examples = len(batch[next(iter(batch))])
-        return [{col: array[i] for col, array in batch.items()} for i in range(n_examples)]
+        ret = [{col: array[i] for col, array in batch.items()} for i in range(n_examples)]
+
+
+        logger.info(f"arrow_dataset.__getitems__ {time.time()} done")
+        return ret
 
     def cleanup_cache_files(self) -> int:
         """Clean up all cache files in the dataset cache directory, excepted the currently used cache file if there is
